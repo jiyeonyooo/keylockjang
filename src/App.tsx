@@ -1,33 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Layout  from "./components/layout";
+import Home from "./routes/home";
+import Login from "./routes/login";
+import Join from "./routes/join";
+import GlobalStyles from "./styles/GlobalStyle";
+import GlobalFont from "./styles/GlobalFont";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./components/loading-screen";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout/>, 
+    children: [ //로그인한 사용자만 접근
+      {
+        path: "",
+        element: <Home/>
+      }
+    ]
+  },
+  {
+    path: "/login",
+    element: <Login/>
+  },
+  {
+    path: "/join",
+    element: <Join/>
+  }
+]);
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [isLoading, setLoading] = useState(true);
+  const init = async() => {
+    //firebase가 유저 정보를 보낼 때 보여질 로딩 화면
+    setLoading(false);
+  };
+  useEffect(()=>{
+    init();
+  },[]); //두 번째 parameter로 빈 배열 -> 처음 마운트될 때만 실행
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <GlobalStyles />
+      <GlobalFont />
+      {isLoading ? <LoadingScreen/> : <RouterProvider router={router}/>}
     </>
   )
 }
